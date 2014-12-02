@@ -19,6 +19,11 @@ import java.util.Locale;
 public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filterable {
     List<String> resultList = new ArrayList<String>();
     Filter filter;
+    List<String> dictionary;
+
+    public List<String> getResultList() {
+        return resultList;
+    }
 
     public SuggestionsListAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
@@ -48,6 +53,7 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
                 FilterResults results = new FilterResults();
                 if (filterString.isEmpty()) {
                     results = null;
+                    resultList.clear();
                     return results;
                 }
                 resultList = search(filterString);
@@ -59,7 +65,7 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results != null && results.count > 0) {
+                if (results != null ) {
                     notifyDataSetChanged();
                 } else {
                     notifyDataSetInvalidated();
@@ -70,7 +76,7 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
     }
 
     List<String> search(String query) {
-        return search(query.toLowerCase(Locale.ENGLISH), 0, getList().size() - 1);
+        return search(query.toLowerCase(Locale.ENGLISH), 0, getDictionary().size() - 1);
 
 
     }
@@ -81,14 +87,14 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
             return results;
         }
         int midIndex = (startIndex + endIndex) / 2;
-        final String midString = getList().get(midIndex).toLowerCase(Locale.ENGLISH);
+        final String midString = getDictionary().get(midIndex).toLowerCase(Locale.ENGLISH);
         if (midString.startsWith(query)) {
-            while (getList().get(midIndex - 1).toLowerCase().startsWith(query)) {
+            while (getDictionary().get(midIndex - 1).toLowerCase().startsWith(query)) {
                 midIndex--;
             }
             for (int i = 0; i < 100; i++) {
-                if (getList().get(midIndex + i).toLowerCase().startsWith(query)) {
-                    results.add(getList().get(midIndex + i));
+                if (getDictionary().get(midIndex + i).toLowerCase().startsWith(query)) {
+                    results.add(getDictionary().get(midIndex + i));
                 }
             }
             return results;
@@ -100,13 +106,13 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
         return results;
     }
 
-    List<String> list;
 
-    List<String> getList() {
-        if (list != null) {
-            return list;
+
+    List<String> getDictionary() {
+        if (dictionary != null) {
+            return dictionary;
         }
-        list = new ArrayList<String>();
+        dictionary = new ArrayList<String>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(
@@ -116,7 +122,7 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
             String mLine = reader.readLine();
             while (mLine != null) {
                 mLine = reader.readLine();
-                list.add(mLine);
+                dictionary.add(mLine);
             }
         } catch (IOException e) {
             //log the exception
@@ -129,7 +135,7 @@ public class SuggestionsListAdapter extends ArrayAdapter<String> implements Filt
                 }
             }
         }
-        return list;
+        return dictionary;
     }
 
 }

@@ -2,16 +2,19 @@ package com.oshamahue.dictionarysearch.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.oshamahue.dictionarysearch.R;
+import com.oshamahue.dictionarysearch.SearchResultsActivity;
 import com.oshamahue.dictionarysearch.adapter.SuggestionsListAdapter;
 
 import java.util.ArrayList;
@@ -29,7 +32,6 @@ public class SuggestionsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -55,6 +57,14 @@ public class SuggestionsFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
+                intent.putExtra(SearchResultsActivity.QUERY_KEY, adapter.getResultList().get(position));
+                startActivity(intent);
             }
         });
         return view;
